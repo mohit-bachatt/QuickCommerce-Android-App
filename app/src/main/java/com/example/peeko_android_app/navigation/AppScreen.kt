@@ -10,6 +10,10 @@ sealed class AppScreen(val route: String) {
     object RegisterScreen : AppScreen("register_screen")
     object ProfileScreen : AppScreen("profile_screen")
     object SettingsScreen : AppScreen("settings_screen")
+    object ProductDetailScreen : AppScreen("product_detail_screen")
+    object CartScreen : AppScreen("cart_screen")
+    object CheckoutScreen : AppScreen("checkout_screen")
+    object OrderPlacedScreen : AppScreen("order_placed_screen")
     
     companion object {
         fun fromRoute(route: String?): AppScreen {
@@ -23,6 +27,10 @@ sealed class AppScreen(val route: String) {
                 RegisterScreen.route -> RegisterScreen
                 ProfileScreen.route -> ProfileScreen
                 SettingsScreen.route -> SettingsScreen
+                ProductDetailScreen.route -> ProductDetailScreen
+                CartScreen.route -> CartScreen
+                CheckoutScreen.route -> CheckoutScreen
+                OrderPlacedScreen.route -> OrderPlacedScreen
                 else -> SplashScreen
             }
         }

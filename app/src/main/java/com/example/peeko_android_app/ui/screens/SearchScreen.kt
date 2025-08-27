@@ -1,5 +1,7 @@
 package com.example.peeko_android_app.ui.screens
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,14 +45,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import coil.compose.AsyncImage
 import com.example.peeko_android_app.R
 import com.example.peeko_android_app.navigation.NavigationViewModel
+import com.example.peeko_android_app.ui.components.Product
+import com.example.peeko_android_app.ui.components.ProductCard
 import com.example.peeko_android_app.ui.theme.PrimaryBlue
 import com.example.peeko_android_app.ui.theme.TextPrimary
 
@@ -57,22 +66,19 @@ data class RecentSearch(
     val text: String
 )
 
-data class Suggestion(
-    val name: String,
-    val category: String,
-    val imageRes: Int
-)
+// Removed Suggestion data class - using Product from ProductCard component
 
 data class TopBrand(
     val name: String,
     val category: String,
-    val imageRes: Int
+    val imageRes: String
 )
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchScreen(
-    navigationViewModel: NavigationViewModel
+    navigationViewModel: NavigationViewModel,
+    onProductClick: (Product) -> Unit = {}
 ) {
     var searchText by remember { mutableStateOf("") }
     
@@ -88,14 +94,44 @@ fun SearchScreen(
     )
     
     val suggestions = listOf(
-        Suggestion("Fisher-Price", "Toys", R.drawable.ic_launcher_foreground),
-        Suggestion("Johnson's Baby", "Baby Care", R.drawable.ic_launcher_foreground)
+        Product(
+            id = "1",
+            name = "Mike Skirts Club",
+            price = "₹ 2000",
+            rating = 4.9f,
+            imageRes = "https://i.postimg.cc/DZNwRbVf/cloth-1.jpg",
+            isFavorite = false
+        ),
+        Product(
+            id = "2",
+            name = "Lacoste Combo",
+            price = "₹2500",
+            rating = 5.0f,
+            imageRes = "https://i.postimg.cc/VvbkwL1q/cloth-2.jpg",
+            isFavorite = true
+        ),
+        Product(
+            id = "3",
+            name = "BabyCotton Shirt",
+            price = "₹1500",
+            rating = 4.8f,
+            imageRes = "https://i.postimg.cc/mZcYkYgw/cloth-3.jpg",
+            isFavorite = false
+        ),
+        Product(
+            id = "4",
+            name = "Fisher-Price Shirt",
+            price = "₹1000",
+            rating = 4.7f,
+            imageRes = "https://i.postimg.cc/nV6vDXst/cloth-4.jpg",
+            isFavorite = false
+        )
     )
     
     val topBrands = listOf(
-        TopBrand("Pampers", "Diapers", R.drawable.pampers_logo),
-        TopBrand("Gerber", "Baby Food", R.drawable.gerber_logo),
-        TopBrand("Carter's", "Baby Clothes", R.drawable.carters_logo)
+        TopBrand("Pampers", "Diapers", "https://i.postimg.cc/wTp1zLy3/pampers-logo.png"),
+        TopBrand("Gerber", "Baby Food", "https://i.postimg.cc/1z2zjq1m/gerber-logo.png"),
+        TopBrand("Carter's", "Baby Clothes", "https://i.postimg.cc/FsV7Hz3p/carters-logo.jpg")
     )
 
     SetStatusBarColor(Color(0xFF52B1AD), false)
@@ -119,7 +155,7 @@ fun SearchScreen(
                         )
                     ), shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
                 )
-                .padding(horizontal = 16.dp, vertical = 24.dp)
+                .padding(horizontal = 16.dp, vertical = 44.dp)
         ) {
             // Search Bar
             Surface(
@@ -244,8 +280,13 @@ fun SearchScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 0.dp)
             ) {
-                items(suggestions) { suggestion ->
-                    SuggestionCard(suggestion = suggestion)
+                items(suggestions) { product ->
+                    ProductCard(
+                        product = product,
+                        onProductClick = { onProductClick(product) },
+                        onFavoriteClick = { /* Handle favorite click */ },
+                        onAddToCartClick = { /* Handle add to cart */ }
+                    )
                 }
             }
             
@@ -273,8 +314,7 @@ fun SearchScreen(
             }
             
             Spacer(modifier = Modifier.height(16.dp))
-            
-            // Top Brands List
+
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 0.dp)
@@ -284,94 +324,42 @@ fun SearchScreen(
                 }
             }
             
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(172.dp))
         }
     }
 }
 
-@Composable
-fun SuggestionCard(
-    suggestion: Suggestion
-) {
-    Card(
-        modifier = Modifier
-            .width(120.dp)
-            .clickable { /* Handle suggestion click */ },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFF0F0F0)),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = suggestion.imageRes),
-                    contentDescription = suggestion.name,
-                    modifier = Modifier.size(60.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Text(
-                text = suggestion.name,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary,
-                maxLines = 1
-            )
-            
-            Text(
-                text = suggestion.category,
-                fontSize = 10.sp,
-                color = Color.Gray,
-                maxLines = 1
-            )
-        }
-    }
-}
+// SuggestionCard removed - replaced with ProductCard component
 
 @Composable
 fun TopBrandCard(
     brand: TopBrand
 ) {
- Column(
-     horizontalAlignment = Alignment.CenterHorizontally,
-     verticalArrangement = Arrangement.Center
- ) {
-     Box(
-         modifier = Modifier
-             .size(100.dp)
-             .clip(CircleShape)
-             .clickable{}
-             .background(Color(0xFFF0F0F0)),
-         contentAlignment = Alignment.Center
-     ){
-         Image(
-             painter = painterResource(id = brand.imageRes),
-             contentDescription = brand.name,
-             modifier = Modifier.size(100.dp),
-             contentScale = ContentScale.FillBounds
-         )
-     }
-     Text(
-         text = brand.name,
-         fontSize = 12.sp,
-         fontWeight = FontWeight.Bold,
-         color = TextPrimary,
-         maxLines = 1
-     )
- }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .clickable {}
+                .background(Color(0xFFF0F0F0)),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                model = brand.imageRes,
+                contentDescription = brand.name,
+                modifier = Modifier.size(100.dp),
+                contentScale = ContentScale.FillBounds
+            )
+        }
+        Text(
+            text = brand.name,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = TextPrimary,
+            maxLines = 1
+        )
+    }
 }

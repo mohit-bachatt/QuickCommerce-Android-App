@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.peeko_android_app.R
 import com.example.peeko_android_app.navigation.AppScreen
 import com.example.peeko_android_app.navigation.NavigationViewModel
@@ -51,7 +52,7 @@ import kotlinx.coroutines.launch
 
 data class OnboardingPage(
     val imageNo: Int,
-    val imageRes: Int,
+    val imageRes: String,
     val title: String,
     val description: String
 )
@@ -64,19 +65,19 @@ fun OnboardingScreen(
     val pages = listOf(
         OnboardingPage(
             imageNo = 1,
-            imageRes = R.drawable.splash_1,
+            imageRes = "https://i.postimg.cc/FR4Z31CR/splash-1.jpg ",
             title = "Welcome to Peeko",
             description = ""
         ),
         OnboardingPage(
             imageNo = 2,
-            imageRes = R.drawable.splash_2,
+            imageRes = "https://i.postimg.cc/63trTgT4/splash-2.jpg",
             title = "Fast Delivery",
             description = "Get your essentials delivered in under 60 minutes"
         ),
         OnboardingPage(
             imageNo = 3,
-            imageRes = R.drawable.splash_3,
+            imageRes = "https://i.postimg.cc/DyH1188T/splash-3.jpg",
             title = "Quality Products",
             description = "Curated selection of safe and premium products for your little ones"
         )
@@ -179,11 +180,12 @@ fun OnboardingPageContent(
         modifier = Modifier.fillMaxSize()
     ) {
         // Background image - simplified without complex animations
-        Image(
-            painter = painterResource(id = page.imageRes),
+        AsyncImage(
+            model = page.imageRes,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.splash_1)
         )
         
         // Gradient overlay for better text readability
