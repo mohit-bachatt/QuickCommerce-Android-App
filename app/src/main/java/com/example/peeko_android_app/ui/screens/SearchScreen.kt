@@ -94,8 +94,8 @@ fun SearchScreen(
     
     val topBrands = listOf(
         TopBrand("Pampers", "Diapers", R.drawable.pampers_logo),
-        TopBrand("Gerber", "Baby Food", R.drawable.ic_launcher_foreground),
-        TopBrand("Carter's", "Baby Clothes", R.drawable.ic_launcher_foreground)
+        TopBrand("Gerber", "Baby Food", R.drawable.gerber_logo),
+        TopBrand("Carter's", "Baby Clothes", R.drawable.carters_logo)
     )
 
     SetStatusBarColor(Color(0xFF52B1AD), false)
@@ -347,59 +347,31 @@ fun SuggestionCard(
 fun TopBrandCard(
     brand: TopBrand
 ) {
-    Card(
-        modifier = Modifier
-            .width(140.dp)
-            .clickable { /* Handle brand click */ },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
-    ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(
-                        brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFFE3F2FD),
-                                Color(0xFFBBDEFB)
-                            )
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = brand.imageRes),
-                    contentDescription = brand.name,
-                    modifier = Modifier.size(60.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
-            
-            Column(
-                modifier = Modifier.padding(12.dp)
-            ) {
-                Text(
-                    text = brand.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
-                    maxLines = 1
-                )
-                
-                Text(
-                    text = brand.category,
-                    fontSize = 12.sp,
-                    color = Color.Gray,
-                    maxLines = 1
-                )
-            }
-        }
-    }
+ Column(
+     horizontalAlignment = Alignment.CenterHorizontally,
+     verticalArrangement = Arrangement.Center
+ ) {
+     Box(
+         modifier = Modifier
+             .size(100.dp)
+             .clip(CircleShape)
+             .clickable{}
+             .background(Color(0xFFF0F0F0)),
+         contentAlignment = Alignment.Center
+     ){
+         Image(
+             painter = painterResource(id = brand.imageRes),
+             contentDescription = brand.name,
+             modifier = Modifier.size(100.dp),
+             contentScale = ContentScale.FillBounds
+         )
+     }
+     Text(
+         text = brand.name,
+         fontSize = 12.sp,
+         fontWeight = FontWeight.Bold,
+         color = TextPrimary,
+         maxLines = 1
+     )
+ }
 }

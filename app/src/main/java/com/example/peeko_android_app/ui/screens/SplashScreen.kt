@@ -72,7 +72,7 @@ fun SplashScreen(
                 painter = painterResource(id = R.drawable.peeko_logo),
                 contentDescription = "Peeko Logo",
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(260.dp)
                     .scale(scale.value)
                     .alpha(alpha.value)
             )
